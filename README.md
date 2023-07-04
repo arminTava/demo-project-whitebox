@@ -1,5 +1,12 @@
 # Turborepo / Next.js / TypeScript / Material UI 
 
+## Short description
+- The project is a monorepo, where you can find server as well as the client applications. Since the project is originally very large, I left only the parts in, which represent an impression and insight of my code and way of working. Therefore you can find 2 small frontend and backend projects as well as a complete CI/CD pipeline in github actions.
+- The projects show unit tests as well as end-to-end testing.
+- The UI framework used here is Material-UI. (But besides Material-UI I also use Tailwind very often).
+- The APIs were solved using GraphQL. On both backend and frontend a codegen file is available. This allows the frontend to create the types automatically from the backend and the source of truth remains in the backend.
+- For clean code current Lint rules are integrated.
+
 
 ## Requirements
 
