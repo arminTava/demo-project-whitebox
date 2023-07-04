@@ -1,0 +1,70 @@
+name: "deploy-standard"
+description: "Standard Deployment steps"
+
+inputs:
+  PROJECT_DIR:
+    required: true
+  SERVER_IP_DEV:
+    required: true
+  TURBO_TOKEN:
+    required: true
+  TURBO_TEAM:
+    required: true
+  TURBO_API:
+    required: true
+  GITHUB_TOKEN:
+    required: true
+  ACCESS_KEY_ID:
+    required: true
+  SECRET_ACCESS_KEY:
+    required: true
+  PASSPHRASE_AWS_SSH:
+    required: true
+  PRIVATE_KEY_AWS:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - uses: Installion-GmbH/package-json-version-check@main
+      id: version-updated
+      with:
+        path: "${{ inputs.PROJECT_DIR }}/package.json"
+      env:
+        GITHUB_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+
+    - name: Configure AWS credentials and login to ECR
+      if: steps.version-updated.outputs.has-updated && github.ref == 'refs/heads/main_dev'
+      id: login-ecr
+      uses: ./.github/workflows/actions/ecr-login
+      with:
+        aws-access-key-id: ${{ inputs.ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ inputs.SECRET_ACCESS_KEY }}
+
+    - name: Build, tag, and push Docker image to Amazon ECR
+      shell: bash
+      if: steps.version-updated.outputs.has-updated && github.ref == 'refs/heads/main_dev'
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: ${{ inputs.PROJECT_DIR }}
+        IMAGE_TAG: ${{ steps.version-updated.outputs.current-package-version }}
+        TURBO_TEAM: ${{ inputs.TURBO_TEAM }}
+        TURBO_TOKEN: ${{ inputs.TURBO_TOKEN }}
+        TURBO_API: ${{ inputs.TURBO_API }}
+      #           docker build --build-arg TURBO_TEAM=$TURBO_TEAM --build-arg TURBO_TOKEN=$TURBO_TOKEN --build-arg TURBO_API=$TURBO_API --no-cache -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f $REPOSITORY/Dockerfile .
+      run: |
+        docker build --no-cache -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f $REPOSITORY/Dockerfile .
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+    # todo: seperate file for this
+    - name: Start docker compose
+      uses: appleboy/ssh-action@v0.1.8
+      if: github.ref == 'refs/heads/main_dev'
+      with:
+        host: ${{ inputs.SERVER_IP_DEV }}
+        username: ec2-user
+        passphrase: ${{inputs.PASSPHRASE_AWS_SSH}}
+        key: ${{inputs.PRIVATE_KEY_AWS}}
+        script: |
+          aws ecr get-login-password --region eu-central-1 | docker login --password-stdin --username AWS 608474161767.dkr.ecr.eu-central-1.amazonaws.com
+          VERSION=${{ steps.version-updated.outputs.current-package-version }} docker compose -f ${{ inputs.PROJECT_DIR }}/docker-compose.yml up -d

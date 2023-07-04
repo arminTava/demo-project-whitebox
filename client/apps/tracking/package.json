@@ -1,0 +1,42 @@
+{
+  "name": "installion_tools-tracking-app",
+  "version": "0.0.2",
+  "scripts": {
+    "build": "next build",
+    "dev": "open http://localhost:3100 && next dev --port 3100",
+    "lint": "eslint --max-warnings 0 .",
+    "lint-fix": "eslint --fix .",
+    "tsc": "tsc -p tsconfig.json",
+    "test": "npm run test:unit",
+    "test-watch": "jest --verbose --watch",
+    "test-coverage": "npm run test-coverage:unit",
+    "test:unit": "jest --verbose",
+    "start:e2e": "dotenv -e .env.test -- next dev --port 3100",
+    "test:e2e": "dotenv -e .env.test -- npx playwright test",
+    "test-coverage:unit": "jest --coverage --verbose",
+    "storybook": "start-storybook -p 6100 --quiet",
+    "storybook-build": "build-storybook -o build-storybook-static",
+    "update-dependencies": "npx npm-check-updates -u",
+    "api-generate-petstore": "ts-node-esm -P tsconfig.esm.json ./src/common/api/petstore/generate/index.mts",
+    "codegen": "graphql-codegen --config codegen.ts"
+  },
+  "dependencies": {
+    "@graphql-codegen/client-preset": "2.1.1",
+    "@marsidev/react-turnstile": "^0.1.0",
+    "config-mui": "*",
+    "graphql-request": "5.2.0",
+    "playwright": "^1.32.3",
+    "react-parallax-tilt": "1.7.68",
+    "ui": "*",
+    "utils-mui": "*",
+    "utils-version": "*"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.34.3",
+    "chalk": "5.1.2",
+    "config-storybook": "*",
+    "config-tsconfig": "*",
+    "openapi-typescript": "5.4.1",
+    "utils-test": "*"
+  }
+}

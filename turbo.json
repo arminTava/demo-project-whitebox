@@ -1,0 +1,63 @@
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "globalDependencies": ["**/.env.local", "**/.env.test"],
+  "pipeline": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [".next/**", "build-next-static/**", "dist/**"]
+    },
+    "storybook-build": {
+      "dependsOn": ["build"],
+      "outputs": ["build-storybook-static/**"]
+    },
+    "lint": {
+      "dependsOn": ["build"]
+    },
+    "tsc": {
+      "dependsOn": ["build"]
+    },
+    "test": {
+      "dependsOn": ["build"]
+    },
+    "test:unit": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "test:integration": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "test-coverage": {
+      "dependsOn": ["build"],
+      "outputs": ["tests/__coverage__/**"]
+    },
+    "test-coverage:unit": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "test-coverage:integration": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "test-coverage:e2e": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "storybook": {
+      "dependsOn": ["build"]
+    },
+    "dev": {
+      "cache": false
+    },
+    "update-dependencies": {
+      "cache": false
+    },
+    "generate-prisma": {
+      "cache": false
+    }
+  }
+}

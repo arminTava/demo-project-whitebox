@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  dev:
+    container_name: gateway
+    image: testgate:1.1 # gateway-${VERSION}
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env
+    # healthcheck:
+    #   test: curl --fail http://localhost || exit 1 #["CMD", "curl", "-f", "http://localhost1:4002/health"]
+    #   interval: 2s
+    #   timeout: 10s
+    #   retries: 5
+    command: NODE_ENV=production npm run start
+  # dev:
+  #   container_name: tracking-app-dev
+  #   volumes:
+  #     - .:/app-tracking/
+  #     - /app-tracking/node_modules
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "4002:4002"
+  #   env_file:
+  #     - .env
+  #   command: npm run dev

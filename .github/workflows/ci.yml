@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - main_dev
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+env:
+  CACHE_PATHS_BUILD: |
+    client/apps/tracking/.next
+    ./client/apps/project-file/.next
+  CACHE_KEY_BUILD: build-${{ github.sha }}
+
+jobs:
+  build:
+    name: Build 🏗️
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
+        uses: ./.github/workflows/actions/setup_node-cache_dep-install_dep
+
+      - name: Build 🏗️
+        run: npm run build
+        # run: |
+        #   npm run build
+        #   npm run storybook-build
+
+      - name: Cache build ⚡
+        id: cache_build
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.CACHE_PATHS_BUILD }}
+          key: ${{ env.CACHE_KEY_BUILD }}
+
+  lint:
+    name: Lint ✅
+    needs: build
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
+        uses: ./.github/workflows/actions/setup_node-cache_dep-install_dep
+
+      - name: Lint ✅
+        run: npm run lint
+
+  tsc:
+    name: TypeScript Compiler 🔎
+    needs: build
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
+        uses: ./.github/workflows/actions/setup_node-cache_dep-install_dep
+
+      - name: TypeScript Compiler 🔎
+        run: npm run tsc
+
+  test:
+    name: Test Coverage 🧪
+    needs: build
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
+        uses: ./.github/workflows/actions/setup_node-cache_dep-install_dep
+
+      - name: Test Coverage 🧪
+        run: npm run test-coverage
+
+      - name: codecov 📊
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        run: |
+          curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import # One-time step
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+          curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+          gpgv codecov.SHA256SUM.sig codecov.SHA256SUM
+          shasum -a 256 -c codecov.SHA256SUM
+          chmod +x codecov
+          ./codecov -t ${CODECOV_TOKEN} --verbose
+
+  ###################################################################
+  # Deployments
+  ###################################################################
+
+  ##############
+  # Frontend
+  ##############
+  reusable_workflow_frontend:
+    if: github.event_name != 'pull_request'
+    uses: ./.github/workflows/deployment.frontend.yml
+    secrets: inherit
+
+  ###############################
+  # Backend
+  ###############################
+
+  reusable_workflow_backend:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main_dev'
+    uses: ./.github/workflows/deployment.backend.dev.yml
+    secrets: inherit

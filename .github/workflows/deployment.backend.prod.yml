@@ -1,0 +1,79 @@
+name: deployment backend for production
+
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        type: choice
+        required: true
+        description: Who to deploy
+        options:
+          - gateway
+          - tracking
+          - zoho
+          - auth
+      version:
+        description: Choose version to deploy
+        required: true
+
+jobs:
+  gateway:
+    name: "Gateway deploy"
+    runs-on: ubuntu-latest
+    if: github.event.inputs.name == 'gateway'
+    steps:
+      - name: Start docker compose
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: 3.77.87.32
+          username: ec2-user
+          passphrase: ${{secrets.PASSPHRASE_AWS_SSH}}
+          key: ${{secrets.PRIVATE_KEY_AWS}}
+          script: |
+            aws ecr get-login-password --region eu-central-1 | docker login --password-stdin --username AWS 608474161767.dkr.ecr.eu-central-1.amazonaws.com
+            VERSION=${{ github.event.inputs.version }} docker compose -f server/graphql-gateway/docker-compose.yml up -d
+  tracking:
+    name: "Tracking deploy"
+    runs-on: ubuntu-latest
+    if: github.event.inputs.name == 'tracking'
+    steps:
+      - name: Start docker compose
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: 18.157.135.219
+          username: ec2-user
+          passphrase: ${{secrets.PASSPHRASE_AWS_SSH}}
+          key: ${{secrets.PRIVATE_KEY_AWS}}
+          script: |
+            aws ecr get-login-password --region eu-central-1 | docker login --password-stdin --username AWS 608474161767.dkr.ecr.eu-central-1.amazonaws.com
+            VERSION=${{ github.event.inputs.version }} docker compose -f server/tracking/docker-compose.yml up -d
+  auth:
+    name: "Auth deploy"
+    runs-on: ubuntu-latest
+    if: github.event.inputs.name == 'auth'
+    steps:
+      - name: Start docker compose
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: 18.157.135.219
+          username: ec2-user
+          passphrase: ${{secrets.PASSPHRASE_AWS_SSH}}
+          key: ${{secrets.PRIVATE_KEY_AWS}}
+          script: |
+            aws ecr get-login-password --region eu-central-1 | docker login --password-stdin --username AWS 608474161767.dkr.ecr.eu-central-1.amazonaws.com
+            VERSION=${{ github.event.inputs.version }} docker compose -f server/auth/docker-compose.yml up -d
+  zoho:
+    name: "Auth deploy"
+    runs-on: ubuntu-latest
+    if: github.event.inputs.name == 'zoho'
+    steps:
+      - name: Start docker compose
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: 18.157.135.219
+          username: ec2-user
+          passphrase: ${{secrets.PASSPHRASE_AWS_SSH}}
+          key: ${{secrets.PRIVATE_KEY_AWS}}
+          script: |
+            aws ecr get-login-password --region eu-central-1 | docker login --password-stdin --username AWS 608474161767.dkr.ecr.eu-central-1.amazonaws.com
+            VERSION=${{ github.event.inputs.version }} docker compose -f server/zoho/docker-compose.yml up -d

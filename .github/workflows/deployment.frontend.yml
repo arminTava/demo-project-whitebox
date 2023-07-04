@@ -1,0 +1,203 @@
+name: deployment frontend
+
+on:
+  workflow_call:
+    secrets:
+      NETLIFY_SITE_ID_TRACKING:
+        required: true
+      NETLIFY_AUTH_TOKEN:
+        required: true
+
+env:
+  FILE_PATH_TRACKING_BUILD_NEXT: client/apps/tracking/.next
+  FILE_PATH_PROJECT_FILE_BUILD_NEXT: ./client/apps/project-file/.next
+
+jobs:
+  check-status-change:
+    name: Check Status App changed
+    runs-on: ubuntu-latest
+    outputs:
+      has-changed: ${{steps.changed-status.outputs.changed}}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: check change
+        uses: marceloprado/has-changed-path@v1.0.1
+        id: changed-status
+        with:
+          paths: client/apps/tracking/**
+
+  deploy-status-app-dev:
+    name: Deploy Status Tracking App - Dev 🚀
+    needs: [check-status-change] # [build, lint, tsc, test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main_dev' && needs.check-status-change.outputs.has-changed == 'true'
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
+        uses: ./.github/workflows/actions/setup_node-cache_dep-install_dep
+      - name: Build 🏗️
+        run: npm run build
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: ${{ env.CACHE_PATHS_BUILD }}
+      #     key: ${{ env.CACHE_KEY_BUILD }}
+      - name: deploy netlify
+        run: |
+          cd client/apps/tracking
+          netlify deploy  --auth=${{secrets.NETLIFY_AUTH_TOKEN}} --site=${{secrets.NETLIFY_SITE_ID_TRACKING}} --build --message="${{ github.event.head_commit.message }}"
+
+  deploy-status-app-prod:
+    name: Deploy Status Tracking App - Prod 🚀
+    needs: [check-status-change]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && needs.check-status-change.outputs.has-changed == 'true'
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
+        uses: ./.github/workflows/actions/setup_node-cache_dep-install_dep
+      - name: Build 🏗️
+        run: npm run build
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: ${{ env.CACHE_PATHS_BUILD }}
+      #     key: ${{ env.CACHE_KEY_BUILD }}
+      - name: deploy netlify
+        run: |
+          cd client/apps/tracking
+          netlify deploy --prod --auth=${{secrets.NETLIFY_AUTH_TOKEN}} --site=${{secrets.NETLIFY_SITE_ID_TRACKING}} --build --message="${{ github.event.head_commit.message }}"
+  ########################################################################
+  # Project-file
+  check-project-file-change:
+    name: Check Project File App changed
+    runs-on: ubuntu-latest
+    outputs:
+      has-changed: ${{steps.changed-project-file.outputs.changed}}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: check change
+        uses: marceloprado/has-changed-path@v1.0.1
+        id: changed-project-file
+        with:
+          paths: client/apps/project-file/**
+
+  deploy-project-file-app-dev:
+    name: Deploy Project File App - Dev 🚀
+    needs: [check-project-file-change] # [build, lint, tsc, test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main_dev' && needs.check-project-file-change.outputs.has-changed  == 'true'
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
+        uses: ./.github/workflows/actions/setup_node-cache_dep-install_dep
+      - name: Build 🏗️
+        run: npm run build
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: ${{ env.CACHE_PATHS_BUILD }}
+      #     key: ${{ env.CACHE_KEY_BUILD }}
+      - name: deploy netlify
+        run: |
+          cd client/apps/project-file
+          netlify deploy  --auth=${{secrets.NETLIFY_AUTH_TOKEN}} --site=${{secrets.NETLIFY_SITE_ID_PROJECT_FILE}} --build --message="${{ github.event.head_commit.message }}"
+
+  deploy-project-file-app-prod:
+    name: Deploy Project File App - Prod 🚀
+    needs: [check-project-file-change] # [build, lint, tsc, test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && needs.check-project-file-change.outputs.has-changed  == 'true'
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
+        uses: ./.github/workflows/actions/setup_node-cache_dep-install_dep
+      - name: Build 🏗️
+        run: npm run build
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: ${{ env.CACHE_PATHS_BUILD }}
+      #     key: ${{ env.CACHE_KEY_BUILD }}
+      - name: deploy netlify
+        run: |
+          cd client/apps/project-file
+          netlify deploy --prod --auth=${{secrets.NETLIFY_AUTH_TOKEN}} --site=${{secrets.NETLIFY_SITE_ID_PROJECT_FILE}} --build --message="${{ github.event.head_commit.message }}"
+
+  ########################################################################
+  # pdf-creator
+  check-pdf-creator-change:
+    name: Check PDF Creator App changed
+    runs-on: ubuntu-latest
+    outputs:
+      has-changed: ${{steps.changed-pdf-creator.outputs.changed}}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: check change
+        uses: marceloprado/has-changed-path@v1.0.1
+        id: changed-pdf-creator
+        with:
+          paths: client/apps/pdfCreator/**
+
+  deploy-pdf-creator-app-dev:
+    name: Deploy PDF Creator App - Dev 🚀
+    needs: [check-pdf-creator-change] # [build, lint, tsc, test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main_dev' && needs.check-pdf-creator-change.outputs.has-changed  == 'true'
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
+        uses: ./.github/workflows/actions/setup_node-cache_dep-install_dep
+      - name: Build 🏗️
+        run: npm run build
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: ${{ env.CACHE_PATHS_BUILD }}
+      #     key: ${{ env.CACHE_KEY_BUILD }}
+      - name: deploy netlify
+        run: |
+          cd client/apps/pdfCreator
+          netlify deploy  --auth=${{secrets.NETLIFY_AUTH_TOKEN}} --site=${{secrets.NETLIFY_SITE_ID_PDF_CREATOR}} --build --message="${{ github.event.head_commit.message }}"
+
+  deploy-pdf-creator-app-prod:
+    name: Deploy PDF Creator App - Prod 🚀
+    needs: [check-pdf-creator-change] # [build, lint, tsc, test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && needs.check-pdf-creator-change.outputs.has-changed  == 'true'
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
+        uses: ./.github/workflows/actions/setup_node-cache_dep-install_dep
+      - name: Build 🏗️
+        run: npm run build
+      # - uses: actions/cache@v3
+      #   with:
+      #     path: ${{ env.CACHE_PATHS_BUILD }}
+      #     key: ${{ env.CACHE_KEY_BUILD }}
+      - name: deploy netlify
+        run: |
+          cd client/apps/pdfCreator
+          netlify deploy --prod --auth=${{secrets.NETLIFY_AUTH_TOKEN}} --site=${{secrets.NETLIFY_SITE_ID_PDF_CREATOR}} --build --message="${{ github.event.head_commit.message }}"

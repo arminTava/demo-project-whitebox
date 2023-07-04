@@ -1,0 +1,7 @@
+src/gql
+tests/__coverage__
+playwright.config.ts
+tests-examples/*.ts
+test-results
+playwright-report
+e2e/**

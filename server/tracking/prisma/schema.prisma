@@ -1,0 +1,1066 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model core_admins {
+  id                       BigInt                     @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  userId                   String                     @db.Char(25)
+  userType                 core_admins_userType       @default(agent)
+  departmentType           core_admins_departmentType @default(none)
+  salutation               String                     @default("Herr") @db.VarChar(15)
+  firstName                String                     @db.VarChar(100)
+  lastName                 String                     @db.VarChar(100)
+  image                    String?                    @db.VarChar(250)
+  phone                    String?                    @db.VarChar(100)
+  mobile                   String?                    @db.VarChar(100)
+  email                    String                     @db.VarChar(100)
+  jobTitle                 String?                    @db.VarChar(100)
+  installionMember         Boolean                    @default(false)
+  team                     String?                    @db.VarChar(100)
+  hasCalendar              Boolean                    @default(false)
+  finishedOffersVisibility Boolean                    @default(false)
+  createdAt                DateTime                   @default(now()) @db.DateTime(0)
+  createdBy                String?                    @db.Char(25)
+  modifiedAt               DateTime                   @default(now()) @db.DateTime(0)
+  modifiedBy               String?                    @db.Char(25)
+  deletedAt                DateTime?                  @db.DateTime(0)
+  deletedBy                String?                    @db.Char(25)
+  isDeleted                Boolean                    @default(false)
+
+  @@index([userId], map: "core_admins_idx_userid")
+}
+
+model core_calendar {
+  id         BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  itemId     String    @db.Char(25)
+  memberId   String?   @db.Char(25)
+  offerId    String?   @db.Char(25)
+  categoryId String?   @db.Char(25)
+  userId     String    @db.VarChar(255)
+  text       String    @db.VarChar(255)
+  comment    String    @db.VarChar(255)
+  start_date DateTime  @default(now()) @db.DateTime(0)
+  end_date   DateTime  @default(now()) @db.DateTime(0)
+  isBinding  Boolean   @default(false)
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  createdBy  String    @db.Char(25)
+  modifiedAt DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy String?   @db.Char(25)
+  deletedAt  DateTime? @db.DateTime(0)
+  deletedBy  String?   @db.Char(25)
+  isDeleted  Boolean   @default(false)
+
+  @@index([isDeleted, memberId, categoryId, start_date], map: "core_calendar_idx_isdelet_memberi_categor_start")
+  @@index([isDeleted, start_date], map: "core_calendar_idx_isdeleted_start_date")
+}
+
+model core_calendar_holidays {
+  id    Int      @id @default(autoincrement())
+  date  DateTime @default(now()) @db.DateTime(0)
+  title String   @db.VarChar(255)
+  state String   @db.VarChar(255)
+  note  String   @db.VarChar(255)
+}
+
+model core_calendar_types {
+  id          BigInt                   @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  categoryId  String                   @db.Char(25)
+  memberId    String?                  @db.Char(25)
+  title       String                   @db.VarChar(150)
+  type        core_calendar_types_type @default(user)
+  position    String                   @default("999") @db.VarChar(15)
+  color       String                   @db.VarChar(150)
+  description String                   @db.Text
+  createdAt   DateTime                 @default(now()) @db.DateTime(0)
+  createdBy   String                   @db.Char(25)
+  modifiedAt  DateTime                 @default(now()) @db.DateTime(0)
+  modifiedBy  String?                  @db.Char(25)
+  deletedAt   DateTime?                @db.DateTime(0)
+  deletedBy   String?                  @db.Char(25)
+  isDeleted   Boolean                  @default(false)
+
+  @@index([categoryId], map: "core_types_idx_categoryid")
+}
+
+model core_contacts {
+  id         Int       @id @default(autoincrement())
+  contactId  String?   @db.Char(25)
+  memberId   String?   @db.Char(25)
+  salutation String?   @db.VarChar(200)
+  firstName  String?   @db.VarChar(100)
+  lastName   String?   @db.VarChar(200)
+  phone      String?   @db.VarChar(100)
+  mobile     String?   @db.VarChar(100)
+  email      String?   @db.VarChar(100)
+  jobTitle   String?   @db.VarChar(100)
+  notes      String?   @db.Text
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  createdBy  String    @db.Char(25)
+  modifiedAt DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy String?   @db.Char(25)
+  deletedAt  DateTime? @db.DateTime(0)
+  deletedBy  String?   @db.Char(25)
+  isDeleted  Boolean   @default(false)
+}
+
+model core_gewerke {
+  id          BigInt                @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  gewerkeId   String                @db.Char(25)
+  title       String                @db.VarChar(150)
+  description String                @db.Text
+  category    String                @db.Char(25)
+  formType    core_gewerke_formType @default(default)
+  createdAt   DateTime              @default(now()) @db.DateTime(0)
+  createdBy   String                @db.Char(25)
+  modifiedAt  DateTime              @default(now()) @db.DateTime(0)
+  modifiedBy  String?               @db.Char(25)
+  deletedAt   DateTime?             @db.DateTime(0)
+  deletedBy   String?               @db.Char(25)
+  isDeleted   Boolean               @default(false)
+}
+
+model core_gewerke_categories {
+  id         BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  categoryId String    @db.Char(25)
+  title      String    @db.VarChar(150)
+  position   String    @default("9999") @db.VarChar(10)
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  createdBy  String    @db.Char(25)
+  modifiedAt DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy String?   @db.Char(25)
+  deletedAt  DateTime? @db.DateTime(0)
+  deletedBy  String?   @db.Char(25)
+  isDeleted  Boolean   @default(false)
+}
+
+model core_member_documents {
+  id         BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  memberId   String?   @db.Char(25)
+  documentId String?   @db.Char(25)
+  url        String?   @db.VarChar(250)
+  filename   String?   @db.VarChar(250)
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  createdBy  String    @db.Char(25)
+  modifiedAt DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy String?   @db.Char(25)
+  deletedAt  DateTime? @db.DateTime(0)
+  deletedBy  String?   @db.Char(25)
+  isDeleted  Boolean   @default(false)
+}
+
+model core_members {
+  id                       BigInt                   @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  memberId                 String?                  @db.Char(25)
+  legacyCompanyId          String?                  @db.VarChar(100)
+  legacyUserId             String?                  @db.VarChar(100)
+  companyName              String?                  @db.VarChar(200)
+  companyType              core_members_companyType @default(auftraggeber)
+  installionMember         Boolean                  @default(false)
+  isDepartment             Boolean                  @default(false)
+  address                  String?                  @db.VarChar(100)
+  zip                      String?                  @db.VarChar(10)
+  city                     String?                  @db.VarChar(100)
+  locationLat              String?                  @db.VarChar(100)
+  locationLng              String?                  @db.VarChar(100)
+  geoProcessed             Boolean                  @default(false)
+  phone                    String?                  @db.VarChar(100)
+  mobile                   String?                  @db.VarChar(100)
+  email                    String?                  @db.VarChar(100)
+  website                  String?                  @db.VarChar(100)
+  salutation               String?                  @db.VarChar(200)
+  firstName                String?                  @db.VarChar(100)
+  lastName                 String?                  @db.VarChar(200)
+  image                    String?                  @db.VarChar(250)
+  jobTitle                 String?                  @db.VarChar(200)
+  notes                    String?                  @db.Text
+  salary                   String?                  @db.VarChar(25)
+  radius                   String?                  @default("1000") @db.VarChar(25)
+  numberWorkers            String?                  @db.VarChar(25)
+  finishedOffersVisibility Boolean                  @default(false)
+  isConfirmed              Boolean                  @default(false)
+  userAgreement            Boolean                  @default(false)
+  createdAt                DateTime                 @default(now()) @db.DateTime(0)
+  createdBy                String                   @db.Char(25)
+  modifiedAt               DateTime                 @default(now()) @db.DateTime(0)
+  modifiedBy               String?                  @db.Char(25)
+  deletedAt                DateTime?                @db.DateTime(0)
+  deletedBy                String?                  @db.Char(25)
+  isDeleted                Boolean                  @default(false)
+
+  @@index([isConfirmed, isDeleted, companyType, memberId], map: "core_members_idx_isconfi_isdelet_company_memberi")
+  @@index([isConfirmed, isDeleted, memberId], map: "core_members_idx_isconfirme_isdeleted_memberid")
+  @@index([memberId], map: "core_members_idx_memberid")
+}
+
+model core_notifications {
+  id                BigInt                  @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  notificationId    String?                 @db.Char(25)
+  offerId           String?                 @db.Char(25)
+  memberId          String?                 @db.Char(25)
+  userId            String?                 @db.Char(25)
+  title             String?                 @db.Text
+  description       String?                 @db.Text
+  status            String?                 @db.VarChar(50)
+  type              core_notifications_type
+  typeItemId        String?                 @db.Char(25)
+  createdAt         DateTime                @default(now()) @db.DateTime(0)
+  isRead            Boolean                 @default(false)
+  isReadMatched     Boolean                 @default(false)
+  isArchivedMatched Boolean                 @default(false)
+  isArchived        Boolean                 @default(false)
+}
+
+model core_offer_tasks {
+  id                         BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  offerId                    String?   @db.Char(25)
+  taskId                     String?   @db.Char(25)
+  title                      String?   @db.VarChar(200)
+  description                String?   @db.Text
+  taskRecipient              String?   @db.VarChar(100)
+  responsibleUserId          String?   @db.Char(25)
+  responsibleRecipientUserId String?   @db.Char(25)
+  priority                   String?   @default("normal") @db.VarChar(50)
+  visibility                 String?   @db.VarChar(100)
+  isPrivate                  Boolean   @default(false)
+  createdAt                  DateTime  @default(now()) @db.DateTime(0)
+  createdBy                  String?   @db.Char(25)
+  modifiedAt                 DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy                 String?   @db.Char(25)
+  isDeleted                  Boolean   @default(false)
+  deletedAt                  DateTime? @db.DateTime(0)
+  deletedBy                  String?   @db.Char(25)
+  deadlineAt                 DateTime? @db.DateTime(0)
+  isCompleted                Boolean   @default(false)
+  completedAt                DateTime? @db.DateTime(0)
+  completedBy                String?   @db.Char(25)
+  completedByUserId          String?   @db.Char(25)
+}
+
+model core_offer_tasks_automatic {
+  id                BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  taskId            String?   @db.Char(25)
+  memberId          String?   @db.Char(25)
+  title             String?   @db.VarChar(200)
+  description       String?   @db.Text
+  triggerValue      String?   @db.VarChar(100)
+  taskRecipient     String?   @db.VarChar(100)
+  recipientMemberId String?   @db.Char(25)
+  deadlineDays      String?   @db.VarChar(100)
+  priority          String?   @default("normal") @db.VarChar(50)
+  createdAt         DateTime  @default(now()) @db.DateTime(0)
+  createdBy         String?   @db.Char(25)
+  modifiedAt        DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy        String?   @db.Char(25)
+  isDeleted         Boolean   @default(false)
+  deletedAt         DateTime? @db.DateTime(0)
+  deletedBy         String?   @db.Char(25)
+}
+
+model core_offers {
+  id                       BigInt                     @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  legacyId                 String                     @db.VarChar(50)
+  legacyCompanyId          String                     @db.VarChar(50)
+  offerId                  String?                    @db.Char(25)
+  memberId                 String?                    @db.Char(25)
+  responsibleUserId        String?                    @db.Char(25)
+  responsibleMatchedUserId String?                    @db.Char(25)
+  offerNumber              String                     @db.VarChar(50)
+  offerType                String                     @db.VarChar(150)
+  title                    String?                    @db.VarChar(200)
+  description              String                     @db.Text
+  address                  String?                    @db.VarChar(100)
+  zip                      String?                    @db.VarChar(10)
+  city                     String?                    @db.VarChar(100)
+  locationLat              String?                    @db.VarChar(100)
+  locationLng              String?                    @db.VarChar(100)
+  image                    String?                    @db.VarChar(250)
+  orderValue               String?                    @db.VarChar(100)
+  orderValueTotal          String?                    @db.VarChar(100)
+  kwp                      String?                    @db.VarChar(100)
+  modules                  String?                    @db.VarChar(100)
+  customerPhone            String?                    @db.VarChar(100)
+  customerMobile           String?                    @db.VarChar(100)
+  customerEmail            String?                    @db.VarChar(100)
+  customerSalutation       String?                    @db.VarChar(100)
+  customerFirstName        String?                    @db.VarChar(100)
+  customerLastName         String?                    @db.VarChar(200)
+  customerInvoiceValue     String?                    @db.VarChar(100)
+  customerNotes            String                     @db.Text
+  offerDateType            core_offers_offerDateType?
+  offerDateStart           DateTime?                  @db.DateTime(0)
+  offerDateEnd             DateTime?                  @db.DateTime(0)
+  // offerDateRelative        core_offers_offerDateRelative? 
+  offerDateCompleted       DateTime?                  @db.DateTime(0)
+  vorOrtTermin             DateTime?                  @db.DateTime(0)
+  zaehlersetzungTermin     DateTime?                  @db.DateTime(0)
+  ACMontageTermin          DateTime?                  @db.DateTime(0)
+  DCMontageTermin          DateTime?                  @db.DateTime(0)
+  gewerkId                 String?                    @db.Char(25)
+  leistungId               String?                    @db.Char(25)
+  memberIdMatched          String?                    @db.Char(25)
+  notes                    String?                    @db.Text
+  invoiceReference         String?                    @db.Text
+  status                   core_offers_status         @default(active)
+  projectStatus            String?                    @db.VarChar(100)
+  createdAt                DateTime                   @default(now()) @db.DateTime(0)
+  createdBy                String                     @db.Char(25)
+  modifiedAt               DateTime                   @default(now()) @db.DateTime(0)
+  modifiedBy               String?                    @db.Char(25)
+  matchedAt                DateTime?                  @db.DateTime(0)
+  matchedBy                String?                    @db.Char(25)
+  isMatched                Boolean                    @default(false)
+  isMatchedConfirmed       Boolean                    @default(false)
+  matchedConfirmedAt       DateTime?                  @db.DateTime(0)
+  isFinished               Boolean                    @default(false)
+  finishedAt               DateTime?                  @db.DateTime(0)
+  finishedBy               String?                    @db.Char(25)
+  isFinalized              Boolean                    @default(false)
+  finalizedAt              DateTime?                  @db.DateTime(0)
+  finalizedBy              String?                    @db.Char(25)
+  followUpAt               DateTime?                  @db.DateTime(0)
+  isAfterSalesFinished     Boolean                    @default(false)
+  deletedAt                DateTime?                  @db.DateTime(0)
+  deletedBy                String?                    @db.Char(25)
+  isCompleted              Boolean                    @default(false)
+  isDeleted                Boolean                    @default(false)
+
+  @@index([createdAt], map: "core_offers_idx_createdat")
+  @@index([isCompleted, isDeleted, isMatchedConfirmed, isAfterSalesFinished], map: "core_offers_idx_iscompl_isdelet_ismatch_isafter")
+  @@index([isCompleted, isDeleted, memberIdMatched], map: "core_offers_idx_iscomplete_isdeleted_memberidma")
+  @@index([memberIdMatched], map: "core_offers_idx_memberidmatched")
+  @@index([offerId], map: "core_offers_idx_offerid")
+}
+
+model core_offers_documents {
+  id         BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  offerId    String?   @db.Char(25)
+  documentId String?   @db.Char(25)
+  packageId  String?   @db.Char(25)
+  url        String?   @db.Text
+  thumb_url  String?   @db.Text
+  filename   String?   @db.Text
+  position   String?   @default("999") @db.VarChar(50)
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  createdBy  String    @db.Char(25)
+  modifiedAt DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy String?   @db.Char(25)
+  deletedAt  DateTime? @db.DateTime(0)
+  deletedBy  String?   @db.Char(25)
+  isDeleted  Boolean   @default(false)
+
+  @@index([packageId], map: "core_offers_documents_idx_packageid")
+}
+
+model core_offers_documents_packages {
+  id                 BigInt                              @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  offerId            String?                             @db.Char(25)
+  packageId          String?                             @db.Char(25)
+  packageAutomaticId String?                             @db.VarChar(50)
+  packageTitle       String?                             @db.VarChar(250)
+  type               core_offers_documents_packages_type @default(global)
+  createdAt          DateTime                            @default(now()) @db.DateTime(0)
+  createdBy          String                              @db.Char(25)
+  modifiedAt         DateTime                            @default(now()) @db.DateTime(0)
+  modifiedBy         String?                             @db.Char(25)
+  deletedAt          DateTime?                           @db.DateTime(0)
+  deletedBy          String?                             @db.Char(25)
+  isDeleted          Boolean                             @default(false)
+}
+
+model core_offers_documents_packages_automatic {
+  id                     BigInt                                        @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  packageId              String?                                       @db.Char(25)
+  title                  String?                                       @db.VarChar(200)
+  categoryId             String?                                       @db.Char(25)
+  categoryTitle          String?                                       @db.VarChar(200)
+  type                   core_offers_documents_packages_automatic_type @default(global)
+  memberId               String?                                       @db.Char(25)
+  position               Int?                                          @default(999)
+  documentNameFormat     String?                                       @db.VarChar(200)
+  visibilityAuftraggeber Boolean                                       @default(true)
+  visibilityInstallateur Boolean                                       @default(true)
+  isUebergabeOrdner      Boolean                                       @default(false)
+  createdAt              DateTime                                      @default(now()) @db.DateTime(0)
+  createdBy              String                                        @db.Char(25)
+  modifiedAt             DateTime                                      @default(now()) @db.DateTime(0)
+  modifiedBy             String?                                       @db.Char(25)
+  deletedAt              DateTime?                                     @db.DateTime(0)
+  deletedBy              String?                                       @db.Char(25)
+  isDeleted              Boolean                                       @default(false)
+}
+
+model core_offers_documents_packages_categories {
+  id            Int       @id @default(autoincrement())
+  categoryId    String?   @db.Char(25)
+  categoryTitle String?   @db.VarChar(200)
+  position      Int?      @default(999)
+  createdAt     DateTime  @default(now()) @db.DateTime(0)
+  createdBy     String    @db.Char(25)
+  modifiedAt    DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy    String?   @db.Char(25)
+  deletedAt     DateTime? @db.DateTime(0)
+  deletedBy     String?   @db.Char(25)
+  isDeleted     Boolean   @default(false)
+}
+
+model core_offers_log {
+  id              BigInt               @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  offerId         String?              @db.Char(25)
+  userId          String?              @db.Char(25)
+  matchedMemberId String?              @db.Char(25)
+  note            String?              @db.Text
+  type            core_offers_log_type
+  createdAt       DateTime             @default(now()) @db.DateTime(0)
+  isHidden        Boolean              @default(false)
+}
+
+model core_offers_montagemappe {
+  id         Int       @id @default(autoincrement())
+  offerId    String?   @db.Char(25)
+  documentId String?   @db.Char(25)
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  createdBy  String    @db.Char(25)
+  modifiedAt DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy String?   @db.Char(25)
+  deletedAt  DateTime? @db.DateTime(0)
+  deletedBy  String?   @db.Char(25)
+  isDeleted  Boolean   @default(false)
+}
+
+model core_offers_montagemappe_values {
+  id         Int       @id @default(autoincrement())
+  offerId    String?   @db.Char(25)
+  documentId String?   @db.Char(25)
+  name       String?   @db.VarChar(150)
+  value      String?   @db.Text
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  createdBy  String    @db.Char(25)
+  modifiedAt DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy String?   @db.Char(25)
+  deletedAt  DateTime? @db.DateTime(0)
+  deletedBy  String?   @db.Char(25)
+  isDeleted  Boolean   @default(false)
+}
+
+model core_offers_netzanmeldung {
+  id          Int       @id @default(autoincrement())
+  stepId      String?   @db.Char(25)
+  offerId     String?   @db.Char(25)
+  description String?   @db.Text
+  isDone      Boolean   @default(false)
+  completedAt DateTime? @db.DateTime(0)
+  completedBy String?   @db.Char(25)
+}
+
+model core_offers_netzanmeldung_steps {
+  id         Int     @id @default(autoincrement())
+  stepTitle  String? @db.VarChar(250)
+  isRequired Boolean @default(false)
+}
+
+model core_offers_notes {
+  id                    BigInt                 @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  noteId                String?                @db.Char(25)
+  offerId               String?                @db.Char(25)
+  userId                String?                @db.Char(25)
+  memberId              String?                @db.Char(25)
+  matchedMemberId       String?                @db.Char(25)
+  note                  String?                @db.Text
+  attachmentUrl         String?                @db.Text
+  type                  core_offers_notes_type
+  createdAt             DateTime               @default(now()) @db.DateTime(0)
+  isSend                Boolean                @default(false)
+  isRead                Boolean                @default(false)
+  isEdited              Boolean                @default(false)
+  isHidden              Boolean                @default(false)
+  isPrivate             Boolean                @default(false)
+  isPrivateType         String?                @db.VarChar(50)
+  recipientAuftraggeber Boolean                @default(false)
+  recipientInstallateur Boolean                @default(false)
+  recipientCustomer     Boolean                @default(false)
+
+  @@index([isHidden], map: "core_offers_notes_idx_ishidden")
+  @@index([isHidden, offerId], map: "core_offers_notes_idx_ishidden_offerid")
+}
+
+model core_offers_positions {
+  id                   Int       @id @default(autoincrement())
+  positionId           String    @db.Char(25)
+  offerId              String    @db.Char(25)
+  title                String?   @db.VarChar(250)
+  statusType           String?   @db.VarChar(250)
+  price                String?   @db.VarChar(250)
+  reason               String?   @db.VarChar(250)
+  reasonReportedTo     String?   @db.VarChar(250)
+  reasonReportedFrom   String?   @db.VarChar(250)
+  reasonReportedAt     String?   @db.VarChar(250)
+  reasonReportedPer    String?   @db.VarChar(250)
+  approvalReportedFrom String?   @db.VarChar(250)
+  approvalReportedAt   String?   @db.VarChar(250)
+  approvalReportedPer  String?   @db.VarChar(250)
+  createdAt            DateTime  @default(now()) @db.DateTime(0)
+  createdBy            String    @db.Char(25)
+  deletedAt            DateTime? @db.DateTime(0)
+  deletedBy            String?   @db.Char(25)
+  isDeleted            Boolean   @default(false)
+}
+
+// model core_offers_status {
+//   id        BigInt   @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+//   offerId   String?  @db.Char(25)
+//   status    String?  @db.VarChar(250)
+//   createdAt DateTime @default(now()) @db.DateTime(0)
+//   createdBy String   @db.Char(25)
+// }
+
+model core_offers_tasks {
+  id                Int       @id @default(autoincrement())
+  offerTaskId       String    @db.Char(25)
+  offerId           String    @db.Char(25)
+  taskId            String    @db.Char(25)
+  note              String?   @db.Text
+  isNotRequired     Boolean   @default(false)
+  isNotRequiredNote String?   @db.Text
+  isCompleted       Boolean   @default(false)
+  createdAt         DateTime  @default(now()) @db.DateTime(0)
+  createdBy         String    @db.Char(25)
+  modifiedAt        DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy        String?   @db.Char(25)
+  deletedAt         DateTime? @db.DateTime(0)
+  deletedBy         String?   @db.Char(25)
+  isDeleted         Boolean   @default(false)
+}
+
+model core_offers_tasks_documents {
+  id         Int       @id @default(autoincrement())
+  offerId    String?   @db.Char(25)
+  taskId     String?   @db.Char(25)
+  documentId String?   @db.Char(25)
+  url        String?   @db.Text
+  thumb_url  String?   @db.Text
+  filename   String?   @db.Text
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  createdBy  String    @db.Char(25)
+  modifiedAt DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy String?   @db.Char(25)
+  deletedAt  DateTime? @db.DateTime(0)
+  deletedBy  String?   @db.Char(25)
+  isDeleted  Boolean   @default(false)
+}
+
+model core_offers_tasks_log {
+  id              Int                        @id @default(autoincrement())
+  logId           String?                    @db.Char(25)
+  offerId         String?                    @db.Char(25)
+  taskId          String?                    @db.Char(25)
+  documentId      String?                    @db.Char(25)
+  userId          String?                    @db.Char(25)
+  memberId        String?                    @db.Char(25)
+  matchedMemberId String?                    @db.Char(25)
+  note            String?                    @db.Text
+  type            core_offers_tasks_log_type
+  createdAt       DateTime                   @default(now()) @db.DateTime(0)
+}
+
+model core_ratings {
+  id            BigInt   @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  memberId      String   @db.Char(25)
+  ratedMemberId String   @db.Char(25)
+  rating        String?  @db.VarChar(5)
+  type          String?  @db.VarChar(50)
+  createdAt     DateTime @default(now()) @db.DateTime(0)
+  modifiedAt    DateTime @default(now()) @db.DateTime(0)
+
+  @@index([ratedMemberId, memberId], map: "rel_member_offer_i_idx_offerid_memberid")
+}
+
+model core_sub_users {
+  id                       BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  userId                   String?   @db.Char(25)
+  memberId                 String?   @db.Char(25)
+  salutation               String?   @db.VarChar(200)
+  firstName                String?   @db.VarChar(100)
+  lastName                 String?   @db.VarChar(200)
+  phone                    String?   @db.VarChar(100)
+  mobile                   String?   @db.VarChar(100)
+  email                    String?   @db.VarChar(100)
+  website                  String?   @db.VarChar(100)
+  jobTitle                 String?   @db.VarChar(100)
+  team                     String?   @db.VarChar(100)
+  image                    String?   @db.VarChar(250)
+  isApplicant              Boolean   @default(false)
+  isWorker                 Boolean   @default(false)
+  isInstaller              Boolean   @default(false)
+  isDepartmentManager      Boolean   @default(false)
+  isManager                Boolean   @default(false)
+  isPrincipal              Boolean   @default(false)
+  isMultiInstallateur      Boolean   @default(false)
+  hasCalendar              Boolean   @default(false)
+  finishedOffersVisibility Boolean   @default(false)
+  isHidden                 Boolean   @default(false)
+  isConfirmed              Boolean   @default(false)
+  createdAt                DateTime  @default(now()) @db.DateTime(0)
+  createdBy                String    @db.Char(25)
+  modifiedAt               DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy               String?   @db.Char(25)
+  deletedAt                DateTime? @db.DateTime(0)
+  deletedBy                String?   @db.Char(25)
+  isDeleted                Boolean   @default(false)
+}
+
+model core_system_emails {
+  id               BigInt                      @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  categoryId       String                      @db.Char(25)
+  title            String                      @db.VarChar(150)
+  value            String                      @db.VarChar(150)
+  subject          String                      @db.VarChar(250)
+  description      String                      @db.Text
+  placeholders     String                      @db.Text
+  template         core_system_emails_template @default(default)
+  salutationType   String                      @default("sehr_geehrte") @db.VarChar(150)
+  buttonPrimary    String?                     @db.VarChar(150)
+  buttonSecondary  String?                     @db.VarChar(150)
+  copyEmailAddress String                      @db.VarChar(150)
+  createdAt        DateTime                    @default(now()) @db.DateTime(0)
+  createdBy        String                      @db.Char(25)
+  modifiedAt       DateTime                    @default(now()) @db.DateTime(0)
+  modifiedBy       String?                     @db.Char(25)
+  isActive         Boolean                     @default(true)
+  deletedAt        DateTime?                   @db.DateTime(0)
+  deletedBy        String?                     @db.Char(25)
+  isDeleted        Boolean                     @default(false)
+}
+
+model core_system_emails_categories {
+  id          BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  categoryId  String    @db.Char(25)
+  title       String    @db.VarChar(150)
+  userGroup   String    @db.VarChar(150)
+  description String    @db.Text
+  isActive    Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @db.DateTime(0)
+  createdBy   String    @db.Char(25)
+  modifiedAt  DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy  String?   @db.Char(25)
+  deletedAt   DateTime? @db.DateTime(0)
+  deletedBy   String?   @db.Char(25)
+  isDeleted   Boolean   @default(false)
+}
+
+model core_system_sms {
+  id             BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  categoryId     String    @db.Char(25)
+  title          String    @db.VarChar(150)
+  value          String    @db.VarChar(150)
+  description    String    @db.Text
+  placeholders   String    @db.Text
+  salutationType String    @default("sehr_geehrte") @db.VarChar(150)
+  createdAt      DateTime  @default(now()) @db.DateTime(0)
+  createdBy      String    @db.Char(25)
+  modifiedAt     DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy     String?   @db.Char(25)
+  isActive       Boolean   @default(true)
+  deletedAt      DateTime? @db.DateTime(0)
+  deletedBy      String?   @db.Char(25)
+  isDeleted      Boolean   @default(false)
+}
+
+model core_system_sms_categories {
+  id          BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  categoryId  String    @db.Char(25)
+  title       String    @db.VarChar(150)
+  userGroup   String    @db.VarChar(150)
+  description String    @db.Text
+  isActive    Boolean   @default(false)
+  createdAt   DateTime  @default(now()) @db.DateTime(0)
+  createdBy   String    @db.Char(25)
+  modifiedAt  DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy  String?   @db.Char(25)
+  deletedAt   DateTime? @db.DateTime(0)
+  deletedBy   String?   @db.Char(25)
+  isDeleted   Boolean   @default(false)
+}
+
+model core_system_task_types {
+  id         Int       @id @default(autoincrement())
+  taskTypeId String    @db.Char(25)
+  title      String    @db.VarChar(150)
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  createdBy  String    @db.Char(25)
+  modifiedAt DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy String?   @db.Char(25)
+  deletedAt  DateTime? @db.DateTime(0)
+  deletedBy  String?   @db.Char(25)
+  isDeleted  Boolean   @default(false)
+}
+
+model core_system_tasks {
+  id                     Int       @id @default(autoincrement())
+  taskId                 String    @db.Char(25)
+  taskTypeId             String?   @db.Char(25)
+  title                  String    @db.VarChar(150)
+  description            String?   @db.Text
+  gewerkeId              String?   @db.Char(25)
+  memberId               String?   @db.Char(25)
+  handlingByUserGroup    String?   @db.VarChar(150)
+  invoiceRelevantType    String?   @db.VarChar(150)
+  invoicePercentageValue String?   @db.VarChar(150)
+  isMemberSpecific       Boolean   @default(false)
+  invoiceBalance         Boolean   @default(false)
+  tutorialUrl            String    @db.VarChar(150)
+  sendMailAccounting     Boolean   @default(false)
+  sendMailAuftraggeber   Boolean   @default(false)
+  sendMailEndkunde       Boolean   @default(false)
+  createdAt              DateTime  @default(now()) @db.DateTime(0)
+  createdBy              String    @db.Char(25)
+  modifiedAt             DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy             String?   @db.Char(25)
+  deletedAt              DateTime? @db.DateTime(0)
+  deletedBy              String?   @db.Char(25)
+  isDeleted              Boolean   @default(false)
+}
+
+model core_tag_categories {
+  id            BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  tagCategoryId String    @db.Char(25)
+  title         String    @db.VarChar(50)
+  position      String    @default("9999") @db.VarChar(10)
+  createdAt     DateTime  @default(now()) @db.DateTime(0)
+  createdBy     String    @db.Char(25)
+  modifiedAt    DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy    String?   @db.Char(25)
+  deletedAt     DateTime? @db.DateTime(0)
+  deletedBy     String?   @db.Char(25)
+  isDeleted     Boolean   @default(false)
+}
+
+model core_tags {
+  id         Int       @id @unique(map: "id") @default(autoincrement()) @db.UnsignedInt
+  tagId      String    @db.Char(25)
+  title      String    @default("") @db.VarChar(50)
+  category   String    @db.Char(25)
+  createdAt  DateTime  @default(now()) @db.DateTime(0)
+  createdBy  String    @default("") @db.Char(25)
+  modifiedAt DateTime  @default(now()) @db.DateTime(0)
+  modifiedBy String?   @db.Char(25)
+  deletedAt  DateTime? @db.DateTime(0)
+  deletedBy  String?   @db.Char(25)
+  isDeleted  Boolean   @default(false)
+}
+
+model core_users {
+  id              BigInt                    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  userId          String                    @db.Char(25)
+  userType        core_users_userType
+  departmentType  core_users_departmentType @default(none)
+  email           String                    @db.VarChar(100)
+  password        String                    @db.Text
+  passwordClear   String                    @db.VarChar(100)
+  passwordChanged Boolean                   @default(false)
+  sessions        String?                   @db.Text
+  createdAt       DateTime                  @default(now()) @db.DateTime(0)
+  createdBy       String?                   @default("") @db.Char(25)
+  modifiedAt      DateTime                  @default(now()) @db.DateTime(0)
+  modifiedBy      String?                   @db.Char(25)
+  deletedAt       DateTime?                 @db.DateTime(0)
+  deletedBy       String?                   @db.Char(25)
+  isDeleted       Boolean                   @default(false)
+  lastLoginAt     DateTime?                 @db.DateTime(0)
+  lastActivityAt  DateTime                  @default(now()) @db.DateTime(0)
+  invitationSend  Boolean                   @default(false)
+
+  @@index([userId], map: "core_users_idx_userid")
+}
+
+model data_blacklist {
+  id          BigInt   @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  blacklistId String?  @db.VarChar(50)
+  email       String   @db.VarChar(100)
+  createdAt   DateTime @default(now()) @db.DateTime(0)
+  createdBy   String?  @db.Char(25)
+  modifiedAt  DateTime @default(now()) @db.DateTime(0)
+  modifiedBy  String?  @db.Char(25)
+}
+
+model import_members {
+  id              BigInt                     @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  memberId        String?                    @db.Char(25)
+  legacyCompanyId String?                    @db.VarChar(100)
+  legacyUserId    String?                    @db.VarChar(100)
+  companyName     String?                    @db.VarChar(200)
+  companyType     import_members_companyType @default(auftraggeber)
+  address         String?                    @db.VarChar(100)
+  zip             String?                    @db.VarChar(10)
+  city            String?                    @db.VarChar(100)
+  locationLat     String?                    @db.VarChar(100)
+  locationLng     String?                    @db.VarChar(100)
+  geoProcessed    Boolean                    @default(false)
+  phone           String?                    @db.VarChar(100)
+  mobile          String?                    @db.VarChar(100)
+  email           String?                    @db.VarChar(100)
+  website         String?                    @db.VarChar(100)
+  salutation      String?                    @db.VarChar(200)
+  firstName       String?                    @db.VarChar(100)
+  lastName        String?                    @db.VarChar(200)
+  image           String?                    @db.VarChar(250)
+  notes           String?                    @db.Text
+  salary          String?                    @db.VarChar(25)
+  radius          String?                    @default("1000") @db.VarChar(25)
+  numberWorkers   String?                    @db.VarChar(25)
+  isConfirmed     Boolean                    @default(false)
+  createdAt       DateTime                   @default(now()) @db.DateTime(0)
+  createdBy       String                     @db.Char(25)
+  modifiedAt      DateTime                   @default(now()) @db.DateTime(0)
+  modifiedBy      String?                    @db.Char(25)
+  deletedAt       DateTime?                  @db.DateTime(0)
+  deletedBy       String?                    @db.Char(25)
+  isDeleted       Boolean                    @default(false)
+  gewerke         String?                    @db.VarChar(250)
+  leistungen      String                     @default("0") @db.VarChar(250)
+  isImported      Boolean                    @default(false)
+  isExisting      Boolean                    @default(false)
+}
+
+model rel_member_gewerke {
+  id         BigInt   @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  memberId   String   @db.Char(25)
+  gewerkeId  String   @db.Char(25)
+  createdAt  DateTime @default(now()) @db.DateTime(0)
+  createdBy  String?  @db.Char(25)
+  modifiedAt DateTime @default(now()) @db.DateTime(0)
+  modifiedBy String?  @db.Char(25)
+}
+
+model rel_member_leistungen {
+  id         BigInt   @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  memberId   String   @db.Char(25)
+  leistungId String   @db.Char(25)
+  createdAt  DateTime @default(now()) @db.DateTime(0)
+  createdBy  String?  @db.Char(25)
+  modifiedAt DateTime @default(now()) @db.DateTime(0)
+  modifiedBy String?  @db.Char(25)
+
+  @@index([leistungId, memberId], map: "rel_member_leistun_idx_leistungid_memberid")
+}
+
+model rel_member_offer_interested {
+  id           BigInt    @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  offerId      String    @db.Char(25)
+  memberId     String    @db.Char(25)
+  createdAt    DateTime  @default(now()) @db.DateTime(0)
+  createdBy    String?   @db.Char(25)
+  isExcluded   Boolean   @default(false)
+  isInterested Boolean   @default(false)
+  mailSend     Boolean   @default(false)
+  mailSendAt   DateTime? @db.DateTime(0)
+  token        String    @db.Char(50)
+
+  @@index([isInterested, memberId], map: "rel_member_offer_i_idx_isinterested_memberid")
+  @@index([offerId, memberId], map: "rel_member_offer_i_idx_offerid_memberid")
+}
+
+model rel_member_tags {
+  id         BigInt   @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  memberId   String   @db.Char(25)
+  tagId      String   @db.Char(25)
+  createdAt  DateTime @default(now()) @db.DateTime(0)
+  createdBy  String?  @db.Char(25)
+  modifiedAt DateTime @default(now()) @db.DateTime(0)
+  modifiedBy String?  @db.Char(25)
+}
+
+model rel_offer_gewerke {
+  id         BigInt   @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  offerId    String   @db.Char(25)
+  gewerkeId  String   @db.Char(25)
+  createdAt  DateTime @default(now()) @db.DateTime(0)
+  createdBy  String?  @db.Char(25)
+  modifiedAt DateTime @default(now()) @db.DateTime(0)
+  modifiedBy String?  @db.Char(25)
+}
+
+model rel_offer_leistungen {
+  id         BigInt   @id @unique(map: "id") @default(autoincrement()) @db.UnsignedBigInt
+  offerId    String   @db.Char(25)
+  leistungId String   @db.Char(25)
+  createdAt  DateTime @default(now()) @db.DateTime(0)
+  createdBy  String?  @db.Char(25)
+  modifiedAt DateTime @default(now()) @db.DateTime(0)
+  modifiedBy String?  @db.Char(25)
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model rel_system_emails_persons_muted {
+  memberId   String?  @db.Char(25)
+  categoryId String   @db.Char(25)
+  createdAt  DateTime @default(now()) @db.DateTime(0)
+  createdBy  String?  @db.Char(25)
+  modifiedAt DateTime @default(now()) @db.DateTime(0)
+  modifiedBy String?  @db.Char(25)
+
+  @@ignore
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model rel_system_sms_persons_muted {
+  memberId   String?  @db.Char(25)
+  categoryId String   @db.Char(25)
+  createdAt  DateTime @default(now()) @db.DateTime(0)
+  createdBy  String?  @db.Char(25)
+  modifiedAt DateTime @default(now()) @db.DateTime(0)
+  modifiedBy String?  @db.Char(25)
+
+  @@ignore
+}
+
+model rel_system_tasks_parenting {
+  id           Int      @id @default(autoincrement())
+  parentTaskId String   @db.Char(25)
+  taskId       String   @db.Char(25)
+  createdAt    DateTime @default(now()) @db.DateTime(0)
+  createdBy    String?  @db.Char(25)
+  modifiedAt   DateTime @default(now()) @db.DateTime(0)
+  modifiedBy   String?  @db.Char(25)
+}
+
+enum core_admins_userType {
+  admin
+  agent
+  multi_installateur
+}
+
+enum core_users_userType {
+  admin
+  agent
+  multi_installateur
+  auftraggeber
+  installateur
+  subuser
+}
+
+enum core_admins_departmentType {
+  manager
+  worker
+  installer
+  applicant
+  none
+}
+
+enum core_users_departmentType {
+  manager
+  worker
+  none
+}
+
+enum core_calendar_types_type {
+  user
+  department
+  global
+}
+
+enum core_gewerke_formType {
+  default
+}
+
+enum core_members_companyType {
+  auftraggeber
+  installateur
+}
+
+enum core_offers_documents_packages_type {
+  global
+  member
+}
+
+enum core_offers_documents_packages_automatic_type {
+  global
+  member
+}
+
+enum core_offers_log_type {
+  add
+  edit
+  delete
+  restore
+  match
+  unmatch
+  complete
+  tender
+  finalize
+  task_add          @map("task-add")
+  task_edit         @map("task-edit")
+  task_completed    @map("task-completed")
+  task_uncompleted  @map("task-uncompleted")
+  task_removed      @map("task-removed")
+  vot_koordinierung @map("vot-koordinierung")
+  vot_dokumentation @map("vot-dokumentation")
+  beauftragung
+  koordinierung
+  montage
+  inbetriebnahme
+  zaehlersetzung
+}
+
+enum import_members_companyType {
+  auftraggeber
+  installateur
+}
+
+enum core_system_emails_template {
+  default
+}
+
+enum core_notifications_type {
+  note_add        @map("note-add")
+  note_edit       @map("note-edit")
+  note_remove     @map("note-remove")
+  task_add        @map("task-add")
+  task_edit       @map("task-edit")
+  task_remove     @map("task-remove")
+  task_complete   @map("task-complete")
+  task_uncomplete @map("task-uncomplete")
+  document_add    @map("document-add")
+  document_edit   @map("document-edit")
+  document_remove @map("document-remove")
+  status_change   @map("status-change")
+}
+
+enum core_offers_notes_type {
+  note
+  match
+  unmatch
+  complete
+  finalize
+}
+
+enum core_offers_tasks_log_type {
+  add
+  edit
+  delete
+  complete
+  note
+}
+
+enum core_offers_offerDateType {
+  fixed
+  relative
+}
+
+enum core_offers_offerDateRelative {
+  drei     @map("30")
+  neun     @map("90")
+  hunderta @map("180")
+  flexible
+}
+
+enum core_offers_status {
+  active
+  disabled
+  cancelled
+}

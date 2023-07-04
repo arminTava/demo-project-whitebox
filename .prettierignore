@@ -1,0 +1,10 @@
+VersionInfo.ts
+
+.next
+.turbo
+#.github
+coverage
+dist
+compiled
+build-next-static
+build-storybook-static

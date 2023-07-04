@@ -1,0 +1,33 @@
+{
+  "name": "installion_tools-project-file-app",
+  "version": "0.0.3",
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev --port 3101",
+    "lint": "eslint --max-warnings 0 .",
+    "lint-fix": "eslint --fix .",
+    "tsc": "tsc -p tsconfig.json",
+    "test": "npm run test:unit",
+    "test-watch": "jest --verbose --watch",
+    "test-coverage": "npm run test-coverage:unit",
+    "test:unit": "jest --verbose",
+    "test-coverage:unit": "jest --coverage --verbose",
+    "storybook": "start-storybook -p 6101 --quiet",
+    "storybook-build": "build-storybook -o build-storybook-static",
+    "update-dependencies": "npx npm-check-updates -u",
+    "codegen": "graphql-codegen --config codegen.ts"
+  },
+  "dependencies": {
+    "config-mui": "*",
+    "ui": "*",
+    "utils-mui": "*",
+    "utils-version": "*"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.0",
+    "@types/xml2js": "^0.4.11",
+    "config-storybook": "*",
+    "config-tsconfig": "*",
+    "utils-test": "*"
+  }
+}

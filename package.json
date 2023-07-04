@@ -1,0 +1,69 @@
+{
+  "name": "installion_tools",
+  "version": "0.0.0",
+  "private": true,
+  "workspaces": [
+    "server/**/*",
+    "client",
+    "client/apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "clean": "npm exec --workspaces -- shx rm -rf node_modules .next .turbo coverage dist compiled build-next-static build-storybook-static && shx rm -rf node_modules",
+    "commit": "git-cz",
+    "dev": "turbo dev",
+    "format-fix": "prettier --write --ignore-unknown -l .",
+    "format-lint": "prettier --check --ignore-unknown .",
+    "postinstall": "manypkg check && npm run generate-prisma",
+    "manypkg-fix": "manypkg fix",
+    "lint": "turbo lint",
+    "lint-fix": "turbo lint",
+    "lint-staged-husky": "lint-staged",
+    "prepare": "husky install",
+    "remove-turbo-cache": "shx rm -rf ./node_modules/.cache/turbo",
+    "storybook": "turbo storybook",
+    "storybook-build": "turbo storybook-build",
+    "test": "turbo test",
+    "test-coverage": "turbo test-coverage",
+    "test:unit": "turbo test:unit",
+    "test:integration": "turbo test:unit",
+    "test:e2e": "turbo test:e2e",
+    "test-coverage:unit": "turbo test-coverage:unit",
+    "test-coverage:integration": "turbo test-coverage:integration",
+    "test-coverage:e2e": "turbo test-coverage:e2e",
+    "tsc": "turbo tsc",
+    "update-dependencies": "turbo update-dependencies && npx npm-check-updates -u",
+    "generate-prisma": "turbo generate-prisma"
+  },
+  "dependencies": {
+    "@commitlint/cli": "17.2.0",
+    "@commitlint/config-conventional": "17.2.0",
+    "@manypkg/cli": "latest",
+    "@types/node": "18.11.9",
+    "commitizen": "4.2.5",
+    "dotenv-cli": "^6.0.0",
+    "husky": "^8.0.2",
+    "lint-staged": "13.0.3",
+    "prettier": "2.7.1",
+    "pretty-quick": "3.1.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-test-renderer": "^18.2.0",
+    "shx": "0.3.4",
+    "tree-kill": "1.2.2",
+    "ts-node": "10.9.1",
+    "tsup": "6.7.0",
+    "turbo": "1.8.6",
+    "typescript": "4.8.4"
+  },
+  "packageManager": "npm@8.19.2",
+  "engines": {
+    "node": ">=18.12.0",
+    "npm": ">=8.19.2"
+  },
+  "optionalDependencies": {
+    "turbo-darwin-64": "1.8.6",
+    "turbo-linux-64": "1.8.6"
+  }
+}

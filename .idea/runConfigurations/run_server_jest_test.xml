@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="run server jest test" type="JavaScriptTestRunnerJest">
+    <config-file value="$PROJECT_DIR$/server/worker-api/jest.config.e2e.ts" />
+    <node-interpreter value="project" />
+    <node-options value="--experimental-vm-modules" />
+    <jest-package value="$PROJECT_DIR$/node_modules/jest" />
+    <working-dir value="$PROJECT_DIR$/server/worker-api/" />
+    <jest-options value="--watch" />
+    <envs>
+      <env name="DOTENV_CONFIG_PATH" value=".env.test" />
+      <env name="NODE_PATH" value="../../node_modules" />
+    </envs>
+    <scope-kind value="TEST_FILE" />
+    <test-file value="$PROJECT_DIR$/server/worker-api/src/pipedrive/pipedrive.controller.spec.ts" />
+    <method v="2" />
+  </configuration>
+</component>

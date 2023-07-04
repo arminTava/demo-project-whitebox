@@ -1,0 +1,136 @@
+name:
+
+on:
+  workflow_call:
+    secrets:
+      TURBO_TOKEN:
+        required: true
+      TURBO_TEAM:
+        required: true
+      TURBO_API:
+        required: true
+      # GITHUB_TOKEN:
+      #   required: true
+      ACCESS_KEY_ID:
+        required: true
+      SECRET_ACCESS_KEY:
+        required: true
+      PASSPHRASE_AWS_SSH:
+        required: true
+      PRIVATE_KEY_AWS:
+        required: true
+jobs:
+  tracking:
+    runs-on: ubuntu-latest
+    name: Build and Publish Docker image for server/tracking
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: check tracking changed
+        uses: marceloprado/has-changed-path@v1.0.1
+        id: changed-tracking
+        with:
+          paths: server/tracking/package.json
+      - name: Configure all deploy steps
+        if: steps.changed-tracking.outputs.changed == 'true'
+        uses: ./.github/workflows/actions/deploy-standard
+        with:
+          PROJECT_DIR: server/tracking
+          SERVER_IP_DEV: 3.75.153.163
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+          TURBO_API: ${{ secrets.TURBO_API }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+          SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+          PASSPHRASE_AWS_SSH: ${{ secrets.PASSPHRASE_AWS_SSH }}
+          PRIVATE_KEY_AWS: ${{ secrets.PRIVATE_KEY_AWS }}
+  auth:
+    runs-on: ubuntu-latest
+    name: Build and Publish Docker image for server/auth
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: check tracking changed
+        uses: marceloprado/has-changed-path@v1.0.1
+        id: changed-auth
+        with:
+          paths: server/auth/package.json
+      - name: Configure all deploy steps
+        if: steps.changed-auth.outputs.changed == 'true'
+        uses: ./.github/workflows/actions/deploy-standard
+        with:
+          PROJECT_DIR: server/auth
+          SERVER_IP_DEV: 3.75.153.163
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+          TURBO_API: ${{ secrets.TURBO_API }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+          SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+          PASSPHRASE_AWS_SSH: ${{ secrets.PASSPHRASE_AWS_SSH }}
+          PRIVATE_KEY_AWS: ${{ secrets.PRIVATE_KEY_AWS }}
+  zoho:
+    runs-on: ubuntu-latest
+    name: Build and Publish Docker image for server/zoho
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: check tracking changed
+        uses: marceloprado/has-changed-path@v1.0.1
+        id: changed-zoho
+        with:
+          paths: server/zoho/package.json
+      - name: Configure all deploy steps
+        if: steps.changed-zoho.outputs.changed == 'true'
+        uses: ./.github/workflows/actions/deploy-standard
+        with:
+          PROJECT_DIR: server/zoho
+          SERVER_IP_DEV: 3.75.153.163
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+          TURBO_API: ${{ secrets.TURBO_API }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+          SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+          PASSPHRASE_AWS_SSH: ${{ secrets.PASSPHRASE_AWS_SSH }}
+          PRIVATE_KEY_AWS: ${{ secrets.PRIVATE_KEY_AWS }}
+
+  gateway:
+    name: Build and Publish Docker image for server/graphql-gateway
+    runs-on: ubuntu-latest
+    needs: [tracking, auth, zoho]
+    if: github.ref == 'refs/heads/main_dev'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: check gateway changed
+        uses: marceloprado/has-changed-path@v1.0.1
+        id: changed-gateway
+        with:
+          paths: server/graphql-gateway/package.json
+      - name: Configure all deploy steps
+        if: steps.changed-gateway.outputs.changed == 'true'
+        uses: ./.github/workflows/actions/deploy-standard
+        with:
+          PROJECT_DIR: server/graphql-gateway
+          SERVER_IP_DEV: 3.77.182.115
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+          TURBO_API: ${{ secrets.TURBO_API }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACCESS_KEY_ID: ${{ secrets.ACCESS_KEY_ID }}
+          SECRET_ACCESS_KEY: ${{ secrets.SECRET_ACCESS_KEY }}
+          PASSPHRASE_AWS_SSH: ${{ secrets.PASSPHRASE_AWS_SSH }}
+          PRIVATE_KEY_AWS: ${{ secrets.PRIVATE_KEY_AWS }}

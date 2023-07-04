@@ -1,0 +1,13 @@
+FROM node:lts
+# RUN apk add --update openssl
+
+WORKDIR /app-tracking
+
+COPY package.json .
+RUN npm install
+RUN npm install tsup
+
+COPY . .
+RUN npm run generate-prisma
+RUN npm run build
+
